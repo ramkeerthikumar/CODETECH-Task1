@@ -1,0 +1,80 @@
+#/PASSWORD STRENGTH CHECKER/#
+
+import re
+
+def assess_password_strength(password):
+    # Initialize the feedback
+    feedback = []
+    
+    # Criteria thresholds
+    length_thresholds = {
+        'weak': 8,
+        'moderate': 12
+    }
+    
+    # Check length
+    length = len(password)
+    if length < length_thresholds['weak']:
+        feedback.append("Password is too short. Consider using at least 8 characters.")
+        length_score = 1
+    elif length < length_thresholds['moderate']:
+        feedback.append("Password length is moderate. Consider using more than 12 characters for better security.")
+        length_score = 2
+    else:
+        feedback.append("Password length is strong.")
+        length_score = 3
+    
+    # Check complexity
+    complexity_score = 0
+    if re.search(r'[a-z]', password):
+        complexity_score += 1
+    else:
+        feedback.append("Add lowercase letters to improve strength.")
+    
+    if re.search(r'[A-Z]', password):
+        complexity_score += 1
+    else:
+        feedback.append("Add uppercase letters to improve strength.")
+    
+    if re.search(r'[0-9]', password):
+        complexity_score += 1
+    else:
+        feedback.append("Add numbers to improve strength.")
+    
+    if re.search(r'[\W_]', password):
+        complexity_score += 1
+    else:
+        feedback.append("Add special characters (e.g., !, @, #) to improve strength.")
+    
+    # Check for common patterns or dictionary words
+    common_patterns = ["123456", "password", "qwerty", "abc123", "letmein"]
+    if any(pattern in password.lower() for pattern in common_patterns):
+        feedback.append("Avoid common patterns or dictionary words to improve security.")
+        uniqueness_score = 0
+    else:
+        uniqueness_score = 1
+    
+    # Calculate overall score
+    overall_score = length_score + complexity_score + uniqueness_score
+    
+    # Determine strength level
+    if overall_score <= 3:
+        strength = "Weak"
+    elif overall_score <= 5:
+        strength = "Moderate"
+    else:
+        strength = "Strong"
+    
+    # Return the strength and feedback
+    return strength, feedback
+
+def main():
+    password = input("Enter your password: ")
+    strength, feedback = assess_password_strength(password)
+    print(f"Password Strength: {strength}")
+    print("Feedback:")
+    for tip in feedback:
+        print(f"- {tip}")
+
+if __name__ == "__main__":
+    main()
